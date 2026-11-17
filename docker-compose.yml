@@ -1,0 +1,129 @@
+﻿
+name: yemekhane
+
+# Ortak MySQL ayarlarÄ±
+x-mysql-ortak: &mysql-ortak
+  image: mysql:8.4
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+    interval: 5s
+    timeout: 5s
+    retries: 30
+    start_period: 60s
+
+# Uygulama ortam deÄŸiÅŸkenleri
+x-uygulama-ortam: &uygulama-ortam
+  TZ: Europe/Istanbul
+  DB_YAZMA_HOST: mysql-primary
+  DB_OKUMA_HOST: mysql-replica
+  DB_PORT: "3306"
+  DB_ADI: yemekhane
+  DB_KULLANICI: yemekhane_app
+  DB_SIFRE: Uyg_2026
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  SESSION_SECRET_KEY: "${SESSION_SECRET_KEY:?SESSION_SECRET_KEY .env dosyasinda tanimli olmali}"
+
+services:
+
+  # Kaynak veritabanÄ±
+  mysql-primary:
+    <<: *mysql-ortak
+    command:
+      - --server-id=1
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --log-bin=mysql-bin
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_tr_0900_ai_ci
+      - --default-time-zone=+03:00
+    environment:
+      TZ: Europe/Istanbul
+      MYSQL_ROOT_PASSWORD: yemekhane_kok
+      MYSQL_DATABASE: yemekhane
+      MYSQL_USER: yemekhane_app
+      MYSQL_PASSWORD: Uyg_2026
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - mysql-primary-veri:/var/lib/mysql
+
+  # Replika veritabanÄ±
+  mysql-replica:
+    <<: *mysql-ortak
+    command:
+      - --server-id=2
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --log-bin=mysql-bin
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_tr_0900_ai_ci
+      - --default-time-zone=+03:00
+      - --relay-log=relay-bin
+    environment:
+      TZ: Europe/Istanbul
+      MYSQL_ROOT_PASSWORD: yemekhane_kok
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-replica-veri:/var/lib/mysql
+
+  # Replika kurulum servisi
+  replica-setup:
+    image: mysql:8.4
+    entrypoint: ["bash", "/replica-setup.sh"]
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: yemekhane_kok
+      MYSQL_DATABASE: yemekhane
+      MYSQL_USER: yemekhane_app
+      MYSQL_PASSWORD: Uyg_2026
+      REPL_USER: repl
+      REPL_PASSWORD: Repl_2026
+    volumes:
+      - ./db/replica-setup.sh:/replica-setup.sh:ro
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+      mysql-replica:
+        condition: service_healthy
+
+  # Redis
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-veri:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Apache frontend
+  frontend:
+    build: ./apache
+    restart: unless-stopped
+    command: ["httpd-foreground", "-D", "WEBAPI"]
+    environment:
+      UYGULAMA_ADRES: "http://uygulama:8000"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/local/apache2/htdocs:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/saglik.txt"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  mysql-primary-veri:
+  mysql-replica-veri:
+  redis-veri:
+
