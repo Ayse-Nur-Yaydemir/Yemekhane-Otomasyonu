@@ -1,7 +1,7 @@
-﻿
+
 name: yemekhane
 
-# Ortak MySQL ayarlarÄ±
+# Ortak MySQL ayarları
 x-mysql-ortak: &mysql-ortak
   image: mysql:8.4
   restart: unless-stopped
@@ -12,7 +12,7 @@ x-mysql-ortak: &mysql-ortak
     retries: 30
     start_period: 60s
 
-# Uygulama ortam deÄŸiÅŸkenleri
+# Uygulama ortam değişkenleri
 x-uygulama-ortam: &uygulama-ortam
   TZ: Europe/Istanbul
   DB_YAZMA_HOST: mysql-primary
@@ -27,7 +27,7 @@ x-uygulama-ortam: &uygulama-ortam
 
 services:
 
-  # Kaynak veritabanÄ±
+  # Kaynak veritabanı
   mysql-primary:
     <<: *mysql-ortak
     command:
@@ -50,7 +50,7 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d:ro
       - mysql-primary-veri:/var/lib/mysql
 
-  # Replika veritabanÄ±
+  # Replika veritabanı
   mysql-replica:
     <<: *mysql-ortak
     command:
@@ -122,8 +122,21 @@ services:
       timeout: 3s
       retries: 5
 
+  # Uygulama
+  uygulama:
+    build: ./uygulama
+    restart: unless-stopped
+    environment:
+      <<: *uygulama-ortam
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      replica-setup:
+        condition: service_completed_successfully
+
 volumes:
   mysql-primary-veri:
   mysql-replica-veri:
   redis-veri:
-

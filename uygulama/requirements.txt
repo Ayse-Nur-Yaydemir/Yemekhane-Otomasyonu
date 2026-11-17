@@ -1,0 +1,4 @@
+Flask>=3.0,<4.0
+mysql-connector-python
+bcrypt
+Flask-Session[redis]>=0.8,<1.0

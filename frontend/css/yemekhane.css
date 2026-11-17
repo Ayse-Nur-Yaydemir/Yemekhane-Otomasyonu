@@ -1,0 +1,270 @@
+.ust {
+  padding: 2.5rem 0 2rem;
+  color: #fff;
+  background: var(--ana);
+}
+
+.ust h1 {
+  margin-bottom: 0.4rem;
+  font-size: clamp(2rem, 6vw, 3rem);
+}
+
+.ust-etiket {
+  margin: 0 0 0.35rem;
+  color: var(--metin-soluk);
+  font-size: var(--boyut-kucuk);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.ust .ust-etiket,
+.ust-tarih {
+  color: #e5f2ed;
+}
+
+.ust-tarih {
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.gezinti {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding-block: 0.8rem;
+  background: var(--yuzey);
+  border-bottom: 1px solid var(--cizgi);
+}
+
+.gezinti a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ana-icerik {
+  display: grid;
+  gap: 1.5rem;
+  padding-block: 2rem;
+}
+
+.hesap-karti,
+.detay-alani,
+.rezervasyon-karti,
+.degerlendirme-karti {
+  padding: 1rem;
+  border: 1px solid var(--cizgi);
+  border-radius: 10px;
+  background: var(--yuzey);
+}
+
+.hesap-karti h2,
+.detay-alani h2 {
+  margin-bottom: 0.75rem;
+}
+
+.hesap-karti label:not(:first-child) {
+  margin-top: 0.75rem;
+}
+
+.hesap-karti .dugme {
+  margin-top: 1rem;
+}
+
+#giris-mesaji:empty,
+#bakiye-mesaji:empty,
+#rezervasyon-mesaji:empty,
+#degerlendirme-mesaji:empty {
+  display: none;
+}
+
+.hareket-listesi {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hareket-satiri {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--cizgi);
+  overflow-wrap: anywhere;
+}
+
+.bolum-basligi {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.bolum-basligi h2 {
+  margin-bottom: 0;
+}
+
+.sayac,
+.kart-etiket,
+.yemek-kategori {
+  color: var(--metin-soluk);
+  font-size: var(--boyut-kucuk);
+}
+
+.menu-grid,
+.rezervasyon-grid,
+.degerlendirme-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.menu-karti {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--cizgi);
+  border-radius: 10px;
+  background: var(--yuzey);
+}
+
+.menu-karti h3,
+.menu-karti h4 {
+  margin: 0.2rem 0;
+}
+
+.kart-etiket {
+  margin-bottom: 0.25rem;
+}
+
+.kart-fiyat {
+  margin-bottom: 0.5rem;
+  color: var(--ana-koyu);
+  font-weight: 700;
+}
+
+.kapasite-bilgisi,
+.son-saat {
+  margin: 0;
+  color: var(--metin-soluk);
+  font-size: var(--boyut-kucuk);
+}
+
+.gun-grubu {
+  margin-top: 1.25rem;
+}
+
+.gun-basligi {
+  margin-bottom: 0.6rem;
+  text-transform: capitalize;
+}
+
+.haftalik-ogun {
+  font-size: var(--boyut);
+}
+
+.detay-alani {
+  min-height: 160px;
+}
+
+.detay-ozet {
+  color: var(--metin-soluk);
+}
+
+.yemek-listesi {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.yemek-satiri {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.15rem 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--cizgi);
+}
+
+.yemek-kategori,
+.yemek-etiketleri {
+  margin: 0;
+}
+
+.yemek-adi {
+  margin: 0.15rem 0 0;
+  font-size: 1rem;
+}
+
+.kalori {
+  color: var(--metin-soluk);
+  font-size: var(--boyut-kucuk);
+  white-space: nowrap;
+}
+
+.yemek-etiketleri {
+  grid-column: 1 / -1;
+  color: var(--metin-soluk);
+  font-size: var(--boyut-kucuk);
+}
+
+.rezervasyon-karti h3,
+.degerlendirme-karti h3 {
+  margin-bottom: 0.4rem;
+}
+
+.rezervasyon-karti p,
+.degerlendirme-karti p {
+  margin-bottom: 0.5rem;
+}
+
+.degerlendirme-formu {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.degerlendirme-formu .dugme {
+  justify-self: start;
+}
+
+.mevcut-puan {
+  color: var(--ana-koyu);
+  font-weight: 700;
+}
+
+.dugme-ikincil {
+  border: 1px solid var(--ana);
+  background: var(--yuzey);
+  color: var(--ana);
+}
+
+.dugme-ikincil:hover {
+  background: var(--ana);
+  color: #fff;
+}
+
+.dugme-tehlike {
+  background: #8a2c24;
+}
+
+.dugme-tehlike:hover {
+  background: #681e18;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (min-width: 620px) {
+  .menu-grid,
+  .rezervasyon-grid,
+  .degerlendirme-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .menu-karti,
+  .detay-alani,
+  .hesap-karti,
+  .rezervasyon-karti,
+  .degerlendirme-karti {
+    padding: 1.2rem;
+  }
+}
