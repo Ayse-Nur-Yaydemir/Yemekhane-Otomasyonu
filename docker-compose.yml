@@ -23,7 +23,9 @@ x-uygulama-ortam: &uygulama-ortam
   DB_SIFRE: Uyg_2026
   REDIS_HOST: redis
   REDIS_PORT: "6379"
-  SESSION_SECRET_KEY: "${SESSION_SECRET_KEY:?SESSION_SECRET_KEY .env dosyasinda tanimli olmali}"
+  # Depo klonlandiginda .env gerektirmeyen yerel gelistirme varsayilani.
+  # Gercek dagitimlarda SESSION_SECRET_KEY ortam degiskeniyle guclu bir anahtar verin.
+  SESSION_SECRET_KEY: "${SESSION_SECRET_KEY:-yerel-gelistirme-icin-yemekhane-oturum-anahtari}"
 
 services:
 

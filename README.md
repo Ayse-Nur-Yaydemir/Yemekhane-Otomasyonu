@@ -14,6 +14,9 @@ docker compose up -d
 docker compose ps -a
 ```
 
+Compose, `SESSION_SECRET_KEY` verilmediğinde yerel geliştirme için bir varsayılan anahtar kullanır.
+Kendi ortamınızda `.env` dosyasına özel bir anahtar yazarak bu değeri değiştirebilirsiniz.
+
 İlk açılış 1–2 dakika sürer (MySQL kurulumu + örnek veri + replika kopyası). Beklenen durum:
 
 | Servis | Beklenen |
