@@ -5,8 +5,16 @@ from rezervasyon_data import (
 )
 
 
-def kullanici_icin_rezervasyon(kullanici_id, menu_id):
-    return rezervasyon_olustur(kullanici_id, menu_id)
+def kullanici_icin_rezervasyon(
+    kullanici_id,
+    menu_id,
+    yarim_porsiyon=False,
+):
+    return rezervasyon_olustur(
+        kullanici_id,
+        menu_id,
+        yarim_porsiyon,
+    )
 
 
 def kullanici_rezervasyon_listesi(kullanici_id):

@@ -1,8 +1,7 @@
-
 from database import okuma_baglantisi, yazma_baglantisi
 
 
-def rezervasyon_olustur(kullanici_id, menu_id):
+def rezervasyon_olustur(kullanici_id, menu_id, yarim_porsiyon=False):
     baglanti = yazma_baglantisi()
     imlec = None
 
@@ -10,8 +9,12 @@ def rezervasyon_olustur(kullanici_id, menu_id):
         imlec = baglanti.cursor(dictionary=True)
 
         imlec.execute(
-            "CALL sp_rezervasyon_yap(%s, %s)",
-            (kullanici_id, menu_id)
+            "CALL sp_rezervasyon_yap(%s, %s, %s)",
+            (
+                kullanici_id,
+                menu_id,
+                1 if yarim_porsiyon else 0,
+            ),
         )
 
         sonuc = imlec.fetchone()
@@ -44,6 +47,7 @@ def kullanicinin_rezervasyonlari(kullanici_id):
                     o.ad AS ogun,
                     r.durum,
                     r.ucret,
+                    r.yarim_porsiyon,
                     CAST(r.olusturma AS CHAR) AS olusturma,
                     d.bos_yer,
                     CONCAT(
@@ -92,7 +96,7 @@ def rezervasyon_iptal_et(kullanici_id, rezervasyon_id):
 
         imlec.execute(
             "CALL sp_rezervasyon_iptal(%s, %s)",
-            (kullanici_id, rezervasyon_id)
+            (kullanici_id, rezervasyon_id),
         )
 
         sonuc = imlec.fetchone()

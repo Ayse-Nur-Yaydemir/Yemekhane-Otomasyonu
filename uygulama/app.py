@@ -65,10 +65,12 @@ def menu_degisiminde_onbellegi_temizle(response):
 from menu_routes import api as menu_api
 from auth_routes import api as auth_api
 from admin_routes import api as admin_api
+from alerji_routes import api as alerji_api
 
 app.register_blueprint(menu_api)
 app.register_blueprint(auth_api)
 app.register_blueprint(admin_api)
+app.register_blueprint(alerji_api)
 
 
 @app.get("/api/")

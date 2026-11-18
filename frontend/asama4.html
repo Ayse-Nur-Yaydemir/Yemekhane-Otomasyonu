@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yemekhane | Alerji ve Porsiyon Tercihleri</title>
+  <style>
+    :root {
+      font-family: Arial, sans-serif;
+      color: #20302a;
+      background: #f4f7f5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    header {
+      background: #174b37;
+      color: #fff;
+      padding: 24px 16px;
+    }
+
+    .sayfa {
+      width: min(100% - 32px, 900px);
+      margin: 0 auto;
+    }
+
+    header .ust {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    header a {
+      color: #fff;
+    }
+
+    main {
+      padding: 24px 0 48px;
+    }
+
+    section {
+      margin: 0 0 24px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #dce5df;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px #173b2910;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #174b37;
+    }
+
+    .yardim {
+      color: #51635a;
+      line-height: 1.5;
+    }
+
+    .alerjen-listesi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .alerjen-secimi {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid #dce5df;
+      border-radius: 10px;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #18734d;
+    }
+
+    .dugme {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 15px;
+      color: #fff;
+      background: #18734d;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .dugme:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .dugme-ikincil {
+      color: #174b37;
+      background: #e6f1ea;
+    }
+
+    .bildirim {
+      min-height: 1.4em;
+      margin-bottom: 0;
+    }
+
+    .hata {
+      color: #a22525;
+    }
+
+    .basari {
+      color: #17633e;
+    }
+
+    .menu-listesi {
+      display: grid;
+      gap: 14px;
+    }
+
+    .menu-karti {
+      padding: 16px;
+      border: 1px solid #dce5df;
+      border-radius: 12px;
+    }
+
+    .menu-karti h3 {
+      margin: 0 0 8px;
+    }
+
+    .menu-bilgi {
+      margin: 6px 0;
+      color: #51635a;
+    }
+
+    .porsiyon-secimi {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0;
+      padding: 12px;
+      background: #f4f7f5;
+      border-radius: 9px;
+    }
+
+    .menu-dugmeleri {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .yemek-detayi {
+      margin: 12px 0;
+      padding: 12px;
+      background: #f7faf8;
+      border-left: 4px solid #abcbb8;
+      border-radius: 6px;
+    }
+
+    .alerji-uyarisi {
+      color: #922020;
+      font-weight: 700;
+    }
+
+    .giris-uyarisi {
+      padding: 18px;
+      color: #633b08;
+      background: #fff4dc;
+      border-radius: 10px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 500px) {
+      .sayfa {
+        width: min(100% - 20px, 900px);
+      }
+
+      header {
+        padding: 18px 10px;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      section {
+        padding: 15px;
+      }
+
+      .menu-dugmeleri {
+        display: grid;
+      }
+
+      .dugme {
+        width: 100%;
+      }
+
+      .porsiyon-secimi {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="sayfa ust">
+      <h1>Alerji ve Porsiyon Tercihleri</h1>
+      <a href="/">Ana sayfaya dön</a>
+    </div>
+  </header>
+
+  <main class="sayfa">
+    <p id="kullanici-bilgisi" class="yardim"></p>
+
+    <div id="giris-uyarisi" class="giris-uyarisi" hidden>
+      Bu sayfayı kullanmak için önce ana sayfadan giriş yapmalısınız.
+      <a href="/">Giriş sayfasına git</a>
+    </div>
+
+    <div id="icerik" hidden>
+      <section aria-labelledby="alerji-baslik">
+        <h2 id="alerji-baslik">Alerji tercihlerim</h2>
+        <p class="yardim">
+          Seçtiğiniz alerjenleri içeren yemekler menü ayrıntısında uyarıyla gösterilir.
+        </p>
+
+        <form id="alerji-formu">
+          <div id="alerjen-listesi" class="alerjen-listesi"></div>
+          <button id="alerji-kaydet" class="dugme" type="submit">
+            Tercihleri kaydet
+          </button>
+          <p id="alerji-mesaji" class="bildirim" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section aria-labelledby="menu-baslik">
+        <h2 id="menu-baslik">Menüler ve porsiyon seçimi</h2>
+        <p class="yardim">
+          Yarım porsiyon seçildiğinde rezervasyon ücreti tam porsiyon ücretinin yarısı olur.
+        </p>
+        <div id="menu-listesi" class="menu-listesi"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const alerjenListesi = document.getElementById("alerjen-listesi");
+    const alerjiMesaji = document.getElementById("alerji-mesaji");
+    const menuListesi = document.getElementById("menu-listesi");
+    const menuDetaylari = new Map();
+    const mevcutRezervasyonlar = new Map();
+
+    let seciliAlerjenIdleri = new Set();
+    let alerjenAdlari = new Map();
+    let kullanici = null;
+
+    async function api(url, secenekler = {}) {
+      const yanit = await fetch(url, {
+        credentials: "same-origin",
+        ...secenekler,
+        headers: {
+          "Content-Type": "application/json",
+          ...(secenekler.headers || {})
+        }
+      });
+
+      const veri = await yanit.json().catch(() => ({}));
+
+      if (!yanit.ok) {
+        throw new Error(veri.hata || "İstek tamamlanamadı.");
+      }
+
+      return veri;
+    }
+
+    function bildirimYaz(element, metin, tur) {
+      element.textContent = metin;
+      element.className = `bildirim ${tur || ""}`;
+    }
+
+    function eleman(tag, className, metin) {
+      const sonuc = document.createElement(tag);
+
+      if (className) {
+        sonuc.className = className;
+      }
+
+      if (metin !== undefined) {
+        sonuc.textContent = metin;
+      }
+
+      return sonuc;
+    }
+
+    async function alerjenTercihleriniYukle() {
+      const veri = await api("/api/alerji-tercihleri");
+      alerjenListesi.replaceChildren();
+      seciliAlerjenIdleri = new Set();
+      alerjenAdlari = new Map();
+
+      for (const alerjen of veri.alerjenler) {
+        const id = Number(alerjen.alerjen_id);
+        const secili = Boolean(alerjen.secili);
+
+        alerjenAdlari.set(id, alerjen.ad);
+
+        if (secili) {
+          seciliAlerjenIdleri.add(id);
+        }
+
+        const label = eleman("label", "alerjen-secimi");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = String(id);
+        input.checked = secili;
+
+        label.append(input, document.createTextNode(alerjen.ad));
+        alerjenListesi.append(label);
+      }
+
+      menuDetaylariniGoster();
+    }
+
+    async function alerjiTercihleriniKaydet(event) {
+      event.preventDefault();
+
+      const dugme = document.getElementById("alerji-kaydet");
+      dugme.disabled = true;
+      bildirimYaz(alerjiMesaji, "Kaydediliyor…", "");
+
+      try {
+        const idler = Array.from(
+          alerjenListesi.querySelectorAll("input:checked")
+        ).map((input) => Number(input.value));
+
+        const sonuc = await api("/api/alerji-tercihleri", {
+          method: "PUT",
+          body: JSON.stringify({ alerjen_idler: idler })
+        });
+
+        seciliAlerjenIdleri = new Set(idler);
+        bildirimYaz(alerjiMesaji, sonuc.mesaj, "basari");
+        menuDetaylariniGoster();
+      } catch (hata) {
+        bildirimYaz(alerjiMesaji, hata.message, "hata");
+      } finally {
+        dugme.disabled = false;
+      }
+    }
+
+    function menuDetaylariniGoster() {
+      for (const detayKutusu of menuDetaylari.values()) {
+        const detay = detayKutusu.dataset.detay
+          ? JSON.parse(detayKutusu.dataset.detay)
+          : null;
+
+        if (detay) {
+          yemekleriCiz(detayKutusu, detay);
+        }
+      }
+    }
+
+    function yemekleriCiz(kutu, menu) {
+      kutu.replaceChildren();
+
+      for (const yemek of menu.yemekler || []) {
+        const yemekKutusu = eleman("div", "yemek-detayi");
+
+        yemekKutusu.append(
+          eleman("strong", "", yemek.ad),
+          eleman(
+            "p",
+            "menu-bilgi",
+            `${yemek.kategori} · ${yemek.kalori} kcal`
+          )
+        );
+
+        const alerjenler = yemek.alerjenler || [];
+        const alerjenMetni = alerjenler.length
+          ? `Alerjenler: ${alerjenler.join(", ")}`
+          : "Bilinen alerjen yok";
+
+        yemekKutusu.append(eleman("p", "menu-bilgi", alerjenMetni));
+
+        const eslesenIdler = (yemek.alerjen_idler || [])
+          .map(Number)
+          .filter((id) => seciliAlerjenIdleri.has(id));
+
+        if (eslesenIdler.length) {
+          const eslesenAdlar = eslesenIdler
+            .map((id) => alerjenAdlari.get(id))
+            .filter(Boolean);
+
+          yemekKutusu.append(
+            eleman(
+              "p",
+              "alerji-uyarisi",
+              `Alerji tercihinizle eşleşiyor: ${eslesenAdlar.join(", ")}`
+            )
+          );
+        }
+
+        kutu.append(yemekKutusu);
+      }
+    }
+
+    async function menuDetayiniGoster(menuId, detayKutusu, dugme) {
+      dugme.disabled = true;
+
+      try {
+        const detay = await api(`/api/menuler/${menuId}`);
+        detayKutusu.dataset.detay = JSON.stringify(detay);
+        menuDetaylari.set(menuId, detayKutusu);
+        yemekleriCiz(detayKutusu, detay);
+        detayKutusu.hidden = false;
+        dugme.textContent = "Yemek ayrıntılarını yenile";
+      } catch (hata) {
+        detayKutusu.hidden = false;
+        detayKutusu.textContent = hata.message;
+      } finally {
+        dugme.disabled = false;
+      }
+    }
+
+    async function rezervasyonYap(
+      menu,
+      yarimPorsiyon,
+      porsiyonSecimi,
+      dugme,
+      mesajKutusu
+    ) {
+      dugme.disabled = true;
+      porsiyonSecimi.disabled = true;
+      bildirimYaz(mesajKutusu, "Rezervasyon yapılıyor…", "");
+
+      try {
+        const sonuc = await api("/api/rezervasyonlar", {
+          method: "POST",
+          body: JSON.stringify({
+            menu_id: Number(menu.menu_id),
+            yarim_porsiyon: yarimPorsiyon
+          })
+        });
+
+        const porsiyonAdi = sonuc.yarim_porsiyon
+          ? "Yarım porsiyon"
+          : "Tam porsiyon";
+
+        mevcutRezervasyonlar.set(Number(menu.menu_id), {
+          durum: "aktif",
+          ucret: sonuc.ucret,
+          yarim_porsiyon: sonuc.yarim_porsiyon
+        });
+
+        dugme.textContent = "Rezervasyon yapıldı";
+
+        bildirimYaz(
+          mesajKutusu,
+          `${porsiyonAdi} rezervasyonu oluşturuldu. Ücret: ${sonuc.ucret} TL.`,
+          "basari"
+        );
+
+      } catch (hata) {
+        dugme.disabled = false;
+        porsiyonSecimi.disabled = false;
+        bildirimYaz(mesajKutusu, hata.message, "hata");
+      }
+    }
+
+    function tarihYaz(tarih) {
+      const parcalar = String(tarih).slice(0, 10).split("-");
+
+      if (parcalar.length !== 3) {
+        return tarih;
+      }
+
+      return `${parcalar[2]}.${parcalar[1]}.${parcalar[0]}`;
+    }
+
+    async function menuleriYukle() {
+      menuListesi.replaceChildren();
+      menuDetaylari.clear();
+      mevcutRezervasyonlar.clear();
+
+      try {
+        const [menuVerisi, rezervasyonVerisi] = await Promise.all([
+          api("/api/menuler/haftalik"),
+          api("/api/rezervasyonlar")
+        ]);
+
+        for (const rezervasyon of rezervasyonVerisi.rezervasyonlar) {
+          if (rezervasyon.durum !== "iptal") {
+            mevcutRezervasyonlar.set(
+              Number(rezervasyon.menu_id),
+              rezervasyon
+            );
+          }
+        }
+
+        if (!menuVerisi.menuler.length) {
+          menuListesi.append(
+            eleman("p", "yardim", "Önümüzdeki 7 gün için menü bulunamadı.")
+          );
+          return;
+        }
+
+        for (const menu of menuVerisi.menuler) {
+          const menuId = Number(menu.menu_id);
+          const kart = eleman("article", "menu-karti");
+          const baslik = `${tarihYaz(menu.tarih)} · ${menu.ogun}`;
+
+          kart.append(eleman("h3", "", baslik));
+          kart.append(eleman("p", "menu-bilgi", menu.yemekhane));
+
+          const fiyat = kullanici.rol === "ogrenci"
+            ? menu.ogrenci_fiyati
+            : menu.personel_fiyati;
+
+          kart.append(
+            eleman("p", "menu-bilgi", `Tam porsiyon: ${fiyat} TL`)
+          );
+
+          const porsiyonSatiri = eleman("label", "porsiyon-secimi");
+          const porsiyonSecimi = document.createElement("input");
+          porsiyonSecimi.type = "checkbox";
+
+          const yarimFiyat = (Number(fiyat) / 2).toFixed(2);
+          porsiyonSatiri.append(
+            porsiyonSecimi,
+            document.createTextNode(
+              `Yarım porsiyon seç (${yarimFiyat} TL)`
+            )
+          );
+          kart.append(porsiyonSatiri);
+
+          const dugmeler = eleman("div", "menu-dugmeleri");
+
+          const detayDugmesi = eleman(
+            "button",
+            "dugme dugme-ikincil",
+            "Yemekleri ve alerjenleri göster"
+          );
+          detayDugmesi.type = "button";
+
+          const rezervasyonDugmesi = eleman(
+            "button",
+            "dugme",
+            "Rezervasyon yap"
+          );
+          rezervasyonDugmesi.type = "button";
+
+          const mesajKutusu = eleman("p", "bildirim", "");
+          mesajKutusu.setAttribute("role", "status");
+          mesajKutusu.setAttribute("aria-live", "polite");
+
+          const detayKutusu = eleman("div", "");
+          detayKutusu.hidden = true;
+
+          detayDugmesi.addEventListener("click", () => {
+            menuDetayiniGoster(
+              menuId,
+              detayKutusu,
+              detayDugmesi
+            );
+          });
+
+          rezervasyonDugmesi.addEventListener("click", () => {
+            rezervasyonYap(
+              menu,
+              porsiyonSecimi.checked,
+              porsiyonSecimi,
+              rezervasyonDugmesi,
+              mesajKutusu
+            );
+          });
+
+          const mevcutRezervasyon = mevcutRezervasyonlar.get(menuId);
+
+          if (mevcutRezervasyon) {
+            const yarim = Boolean(mevcutRezervasyon.yarim_porsiyon);
+
+            porsiyonSecimi.checked = yarim;
+            porsiyonSecimi.disabled = true;
+            rezervasyonDugmesi.disabled = true;
+            rezervasyonDugmesi.textContent = "Rezervasyon mevcut";
+
+            const porsiyonAdi = yarim
+              ? "Yarım porsiyon"
+              : "Tam porsiyon";
+
+            bildirimYaz(
+              mesajKutusu,
+              `${porsiyonAdi} rezervasyonunuz var. Ücret: ${mevcutRezervasyon.ucret} TL.`,
+              ""
+            );
+          } else {
+            const sonSaat = new Date(menu.rezervasyon_son);
+
+            if (!Number.isNaN(sonSaat.getTime()) && sonSaat <= new Date()) {
+              porsiyonSecimi.disabled = true;
+              rezervasyonDugmesi.disabled = true;
+              rezervasyonDugmesi.textContent = "Süre doldu";
+              bildirimYaz(
+                mesajKutusu,
+                "Bu menü için rezervasyon süresi doldu.",
+                ""
+              );
+            }
+          }
+
+          dugmeler.append(detayDugmesi, rezervasyonDugmesi);
+          kart.append(dugmeler, mesajKutusu, detayKutusu);
+          menuListesi.append(kart);
+        }
+      } catch (hata) {
+        menuListesi.append(eleman("p", "hata", hata.message));
+      }
+    }
+
+    async function baslat() {
+      let oturum;
+
+      try {
+        oturum = await api("/api/oturum");
+      } catch (_hata) {
+        document.getElementById("giris-uyarisi").hidden = false;
+        return;
+      }
+
+      kullanici = oturum.kullanici;
+
+      document.getElementById("kullanici-bilgisi").textContent =
+        `${kullanici.ad} ${kullanici.soyad} olarak giriş yaptınız.`;
+      document.getElementById("icerik").hidden = false;
+
+      try {
+        await alerjenTercihleriniYukle();
+      } catch (hata) {
+        bildirimYaz(alerjiMesaji, hata.message, "hata");
+      }
+
+      await menuleriYukle();
+    }
+
+    document
+      .getElementById("alerji-formu")
+      .addEventListener("submit", alerjiTercihleriniKaydet);
+
+    baslat();
+  </script>
+</body>
+</html>
