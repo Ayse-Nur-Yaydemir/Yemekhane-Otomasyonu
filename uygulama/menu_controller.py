@@ -1,15 +1,24 @@
+from datetime import date
+
+from menu_cache import onbellegin_getir_veya_yukle
 from menu_data import (
     bugunun_menuleri,
-    menu_detay_satirlari,
     haftalik_menu_satirlari,
+    menu_detay_satirlari,
 )
 
 
 def gunun_menuleri():
-    return {"menuler": bugunun_menuleri()}
+    bugun = date.today().isoformat()
+    anahtar = f"yemekhane:menu:gun:{bugun}"
+
+    return onbellegin_getir_veya_yukle(
+        anahtar,
+        lambda: {"menuler": bugunun_menuleri()},
+    )
 
 
-def secilen_menu(menu_id):
+def _secilen_menu_verisini_yukle(menu_id):
     satirlar = menu_detay_satirlari(menu_id)
 
     if not satirlar:
@@ -45,5 +54,22 @@ def secilen_menu(menu_id):
         "toplam_kalori": sum(yemek["kalori"] for yemek in yemekler),
         "yemekler": yemekler,
     }
+
+
+def secilen_menu(menu_id):
+    anahtar = f"yemekhane:menu:detay:{menu_id}"
+
+    return onbellegin_getir_veya_yukle(
+        anahtar,
+        lambda: _secilen_menu_verisini_yukle(menu_id),
+    )
+
+
 def haftalik_menuler():
-    return {"menuler": haftalik_menu_satirlari()}
+    bugun = date.today().isoformat()
+    anahtar = f"yemekhane:menu:hafta:{bugun}"
+
+    return onbellegin_getir_veya_yukle(
+        anahtar,
+        lambda: {"menuler": haftalik_menu_satirlari()},
+    )

@@ -1,9 +1,13 @@
 import os
+import re
 from datetime import timedelta
 
 import redis
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_session import Session
+
+from menu_cache import menu_onbellegini_temizle
+
 
 app = Flask(__name__)
 
@@ -23,6 +27,41 @@ app.config.update(
 
 Session(app)
 
+
+@app.after_request
+def menu_degisiminde_onbellegi_temizle(response):
+    basarili = 200 <= response.status_code < 300
+    yol = request.path
+    yontem = request.method
+
+    rezervasyon_olustu = (
+        yontem == "POST"
+        and yol == "/api/rezervasyonlar"
+    )
+    rezervasyon_iptal_edildi = (
+        yontem == "POST"
+        and re.fullmatch(r"/api/rezervasyonlar/\d+/iptal", yol)
+    )
+    menu_olusturuldu = (
+        yontem == "POST"
+        and yol == "/api/yonetici/menuler"
+    )
+    menu_guncellendi = (
+        yontem == "PUT"
+        and re.fullmatch(r"/api/yonetici/menuler/\d+", yol)
+    )
+
+    if basarili and (
+        rezervasyon_olustu
+        or rezervasyon_iptal_edildi
+        or menu_olusturuldu
+        or menu_guncellendi
+    ):
+        menu_onbellegini_temizle()
+
+    return response
+
+
 from menu_routes import api as menu_api
 from auth_routes import api as auth_api
 from admin_routes import api as admin_api
@@ -36,7 +75,7 @@ app.register_blueprint(admin_api)
 def ana_sayfa():
     return jsonify({
         "durum": "çalışıyor",
-        "mesaj": "Yemekhane API hazır."
+        "mesaj": "Yemekhane API hazır.",
     })
 
 
